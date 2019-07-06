@@ -4,7 +4,7 @@
 1. Fork this project by pressing the fork buton
 2. Locally clone your Forked version. You can now begin modifying it. 
 
-## Containarizing and Running Locally
+## Containerizing and Running Locally
 The supplied flask app is a very simple api with three endpoints.
 GET '/': This is a simple health check, which returns the response 'Healthy'. 
 POST '/auth': This  takes a email and password as json arguments and returns a jwt token base on a custom secret.
