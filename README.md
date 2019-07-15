@@ -13,9 +13,9 @@ GET '/contents': This requires a valid jwt token, and returns the un-encrpyted c
 ### Run the Api using Flask Server
 1.  Install python dependencies. These dependencies are kept in a requirements.txt file. To install them, use pip:
 
-	```bash
+```bash
 pip install -r requirements.txt
-	```
+```
 
 1. Setting up environment
 
@@ -27,30 +27,30 @@ pip install -r requirements.txt
 
  **LOG_LEVEL** - The level of logging. Will default to 'INFO', but when  debugging an app locally, you may want to set it to 'DEBUG'
 
-	```bash
+```bash
 export JWT_SECRET=myjwtsecret
 export LOG_LEVEL=DEBUG
 ```
 
 3. Run the app using the Flask server, from the flask-app directory, run:
-	```bash
+```bash
 python app/main.py
 ```
 
  To try the api endpoints, open a new shell and run, replacing '\<EMAIL\>' and '\<PASSWORD\>' with and any values:
 
-	```bash
+```bash
 export TOKEN=`curl -d '{"email":"<EMAIL>","password":"<PASSWORD>"}' -H "Content-Type: application/json" -X POST localhost:80/auth  | jq -r '.token'`
 ```
 
  This calls the endpoint 'localhost:80/auth' with the '{"email":"<EMAIL>","password":"<PASSWORD>"}' as the message body. The return value is a jwt token based on the secret you supplied. We are assigning that secret to the environment variable 'TOKEN'. To see the jwt token, run:
 
-	```bash
+```bash
 echo $TOKEN
 ```
  To call the 'contents' endpoint, which decrpyts the token and returns it content, run:
 
-	```bash
+```bash
 curl --request GET 'http://127.0.0.1:80/contents' -H "Authorization: Bearer ${TOKEN}" | jq .
 ```
  You should see the email that you passed in as one of the values.
@@ -67,35 +67,35 @@ curl --request GET 'http://127.0.0.1:80/contents' -H "Authorization: Bearer ${TO
 
  gunicorn should be run with the arguments:
 
-	```
+```bash
 gunicorn -b :8080 main:APP
 ```
 
 
 3. Create a file named 'env_file' and use it to set the environment variables which will be run locally in your container. Here we do not need the export command, just an equals sign:
 
-
- \<VARIABLE-NAME\>=\<VARIABLE-VALUE\>
-
-4. Build a Local Docker Image
- To build a Docker image run:
 ```
+ \<VARIABLE-NAME\>=\<VARIABLE-VALUE\>
+```
+
+4. Build a Local Docker Image. To build a Docker image run:
+```bash
 docker build -t jwt-api-test .
 ```
 
 5. Run the image locally, using the 'gunicorn' server:
-	```
+```bash
 docker run --env-file=env_file -p 80:8080 jwt-api-test
 ```
 
- To use the endpoints use the same curl commands as before:
+  To use the endpoints use the same curl commands as before:
 
-	```bash
+```bash
 export TOKEN=`curl -d '{"email":"<EMAIL>","password":"<PASSWORD>"}' -H "Content-Type: application/json" -X POST localhost:80/auth  | jq -r '.token'`
 ```
-	```bash
+```bash
 curl --request GET 'http://127.0.0.1:80/contents' -H "Authorization: Bearer ${TOKEN}" | jq .
-	```
+```
 
 ## Deployment to Kubernetes using CodePipeline and CodeBuild
 
@@ -103,42 +103,41 @@ curl --request GET 'http://127.0.0.1:80/contents' -H "Authorization: Bearer ${TO
 
 1. Install  aws cli
 
-	```bash
+```bash
 pip install awscli --upgrade --user 
 ```
 
  Note: If you are using a Python virtual environment, the command will be:
 
-	```bash 
+```bash 
 pip install awscli --upgrade
 ```
 
-2. 
-[Generate a aws access key id and secret key](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
+2. [Generate a aws access key id and secret key](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
 
 3. Setup your environment to use these keys:
  If you not already have a aws 'credentials' file setup, run:
 
-	```bash
+```bash
 aws configure
 ```
 And use the credentials you generated in step 2. Your aws commandline tools will now use these credentials.
 
 4. Install the 'eksctl' tool.
  
- The 'eksctl' tool allow interaction wth a EKS cluster from the command line. To install, follow the [directions for your platform](https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html)
+ The 'eksctl' tool allow interaction wth a EKS cluster from the command line. To install, follow the [directions for your platform](https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html).
 
 5. Create a EKS cluster
  
-	```bash
-eksctl create cluster  --name simple-jwt-api  --version 1.12  --nodegroup-name standard-workers   --nodes 3  --nodes-min 1  --nodes-max 4  --node-ami auto
+```bash
+eksctl create cluster  --name simple-jwt-api  --version 1.12  --nodegroup-name standard-workers  --nodes 3  --nodes-min 1  --nodes-max 4  --node-ami auto
 ```
 
  This will take some time to do. Progress can be checked by visiting the aws console and selecting EKS from the services. 
 
 6. Check the cluster is ready:
  
-	```bash
+```bash
 kubectl get nodes
 ```
 
@@ -150,7 +149,7 @@ You will now create a pipeline which watches your Github. When changes are check
 
 1. Create an IAM role that CodeBuild can use to interact with EKS:
 
-	```bash
+```bash
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
 echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "eks:Describe*", "ssm:GetParameters" ], "Resource": "*" } ] }' > /tmp/iam-role-policy 
@@ -163,7 +162,7 @@ aws iam put-role-policy --role-name UdacityFlaskDeployCBKubectlRole --policy-nam
 1. Grant the role access to the cluster.
 The 'aws-auth ConfigMap' is used to grant role based access control to your cluster. 
 
-	```
+```bash
 ROLE="    - rolearn: arn:aws:iam::$ACCOUNT_ID:role/UdacityFlaskDeployCBKubectlRole\n      username: build\n      groups:\n        - system:masters"
 kubectl get -n kube-system configmap/aws-auth -o yaml | awk "/mapRoles: \|/{print;print \"$ROLE\";next}1" > /tmp/aws-auth-patch.yml
 kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
@@ -175,7 +174,7 @@ This token should be saved somewhere that is secure.
 
 1. The file *buildspec.yml* instructs CodeBuild. We need a way to pass your jwt secret to the app in kubernetes securly. You will be using AWS parameter-store to do this. First add the following to your buildspec.yml file:
 
-	```yaml
+```yaml
 env:
   parameter-store:         
     JWT_SECRET: JWT_SECRET
@@ -185,7 +184,7 @@ env:
 
 1.  Put secret into AWS Parameter Store 
 
-	```
+```bash
 aws ssm put-parameter --name JWT_SECRET --value "YourJWTSecret" --type SecureString
 ```
 
@@ -200,27 +199,27 @@ aws ssm put-parameter --name JWT_SECRET --value "YourJWTSecret" --type SecureStr
    Save this file.
    
 1. Create a stack for CodePipeline
-	- Go the the [CloudFormation service](https://us-east-2.console.aws.amazon.com/cloudformation/) in the aws console. 
-	- Press the 'Create Stack' button. 
-	- Choose the 'Upload template to S3' option and upload the template file 'ci-cd-codepipeline.cfn.yml'
-	- Press 'Next'. Give the stack a name, fill in your GitHub login and the Github access token generated in step 9. 
-	- Confirm the cluster name matches your cluster, the 'kubectl IAM role' matches the role you created above, and the repository matches the name of your forked repo.
-	- Create the stack.
+  - Go the the [CloudFormation service](https://us-east-2.console.aws.amazon.com/cloudformation/) in the aws console. 
+  - Press the 'Create Stack' button. 
+  - Choose the 'Upload template to S3' option and upload the template file 'ci-cd-codepipeline.cfn.yml'
+  - Press 'Next'. Give the stack a name, fill in your GitHub login and the Github access token generated in step 9. 
+  - Confirm the cluster name matches your cluster, the 'kubectl IAM role' matches the role you created above, and the repository matches the name of your forked repo.
+  - Create the stack.
 	 
-	You can check it's status in the [CloudFormation console](https://us-east-2.console.aws.amazon.com/cloudformation/).
+  You can check it's status in the [CloudFormation console](https://us-east-2.console.aws.amazon.com/cloudformation/).
 
 1. Check the pipeline works. Once the stack is successfully created, commit a change to the master branch of your github repo. Then, in the aws console go to the [CodePipeline UI](https://us-east-2.console.aws.amazon.com/codesuite/codepipeline). You should see that the build is running.
 
 16. To test your api endpoints, get the external ip for your service:
 
 
-	``` 
+``` bash
 kubectl get services simple-jwt-api -o wide
 ```
 
  Now use the external ip url to test the app:
 
-	```
+```bash
 export TOKEN=`curl -d '{"email":"<EMAIL>","password":"<PASSWORD>"}' -H "Content-Type: application/json" -X POST <EXTERNAL-IP URL>:80/auth  | jq -r '.token'`
 curl --request GET '<EXTERNAL-IP URL>:80/contents' -H "Authorization: Bearer ${TOKEN}" | jq 
 ```
