@@ -110,9 +110,6 @@ You will now create a pipeline which watches your Github. When changes are check
         ```
     - Create a role policy document that allows the actions "eks:Describe*" and "ssm:GetParameters". You can do this by setting an environment variable with the role policy:
         ```bash
-        what
-        ```
-        ```bash
         TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
         ```
     - Create a role named 'UdacityFlaskDeployCBKubectlRole' using the role policy document:
