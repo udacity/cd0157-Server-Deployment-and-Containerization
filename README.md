@@ -97,59 +97,34 @@ GET '/contents': This requires a valid jwt token, and returns the un-encrpyted c
 
 ### Create a Kubernetes (EKS) Cluster
 
-1. Install  aws cli
-
-    ```bash
-    pip install awscli --upgrade --user 
-    ```
-
-    Note: If you are using a Python virtual environment, the command will be:
-
-    ```bash 
-    pip install awscli --upgrade
-    ```
-
-2. [Generate a aws access key id and secret key](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
-
-3. Setup your environment to use these keys:
-
-If you not already have a aws 'credentials' file setup, run:
-
-    ```bash
-    aws configure
-    ```
-    and use the credentials you generated in step 2. Your aws commandline tools will now use these credentials.
-
-4. Install the 'eksctl' tool. The 'eksctl' tool allow interaction wth a EKS cluster from the command line. To install, follow the [directions for your platform](https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html).
-
-5. Create an EKS cluster
- 
-    ```bash
-    eksctl create cluster  --name simple-jwt-api  --version 1.12  --nodegroup-name standard-workers  --nodes 3  --nodes-min 1  --nodes-max 4  --node-ami auto
-    ```
-    This will take some time to do. Progress can be checked by visiting the aws console and selecting EKS from the services. 
-
-6. Check the cluster is ready:
- 
-    ```bash
-    kubectl get nodes
-    ```
-
-    If the nodes are up and healthy, the cluster should be ready.
+1. Create an EKS cluster named 'simpe-jwt-api'
 
 ### Create Pipeline
 You will now create a pipeline which watches your Github. When changes are checked in, it will build a new image and deploy it to your cluster. 
 
 
-1. Create an IAM role that CodeBuild can use to interact with EKS:
-
-    ```bash
-    ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-    TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
-    echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "eks:Describe*", "ssm:GetParameters" ], "Resource": "*" } ] }' > /tmp/iam-role-policy 
-    aws iam create-role --role-name UdacityFlaskDeployCBKubectlRole --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
-    aws iam put-role-policy --role-name UdacityFlaskDeployCBKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
-    ```
+1. Create an IAM role that CodeBuild can use to interact with EKS. :
+	- Set an environment variable `ACCOUNT_ID` to the value of your AWS account id. You can do this with awscli:
+            ```bash
+            ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+            ```
+	 - Create a role policy document that allows the actions "eks:Describe*" and "ssm:GetParameters". You can do this by setting an environment variable with the role policy:
+	    ```bash
+            TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
+            ```
+	 - Create a role named 'UdacityFlaskDeployCBKubectlRole' using the role policy document:
+	     ```bash
+	     aws iam create-role --role-name UdacityFlaskDeployCBKubectlRole --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
+	     ```
+	 - Create a role policy document that also allows the actions "eks:Describe*" and "ssm:GetParameters". You can create the document in your tmp directory:
+	     ```bash
+             echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "eks:Describe*", "ssm:GetParameters" ], "Resource": "*" } ] }' > /tmp/iam-role-policy 
+             ```
+	 - Attach the policy to the 'UdacityFlaskDeployCBKubectlRole'. You can do this using awscli:
+	     ```bash
+    
+             aws iam put-role-policy --role-name UdacityFlaskDeployCBKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
+              ```
     You have now created a role named 'UdacityFlaskDeployCBKubectlRole'
 
 2. Grant the role access to the cluster.
