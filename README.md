@@ -97,44 +97,55 @@ GET '/contents': This requires a valid jwt token, and returns the un-encrpyted c
 
 ### Create a Kubernetes (EKS) Cluster
 
-1. Create an EKS cluster named 'simpe-jwt-api'
+- Create an EKS cluster named 'simpe-jwt-api'
 
 ### Create Pipeline
 You will now create a pipeline which watches your Github. When changes are checked in, it will build a new image and deploy it to your cluster. 
 
 
 1. Create an IAM role that CodeBuild can use to interact with EKS. :
-	- Set an environment variable `ACCOUNT_ID` to the value of your AWS account id. You can do this with awscli:
-            ```bash
-            ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-            ```
-	 - Create a role policy document that allows the actions "eks:Describe*" and "ssm:GetParameters". You can do this by setting an environment variable with the role policy:
-	    ```bash
-            TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
-            ```
-	 - Create a role named 'UdacityFlaskDeployCBKubectlRole' using the role policy document:
-	     ```bash
-	     aws iam create-role --role-name UdacityFlaskDeployCBKubectlRole --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
-	     ```
-	 - Create a role policy document that also allows the actions "eks:Describe*" and "ssm:GetParameters". You can create the document in your tmp directory:
-	     ```bash
-             echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "eks:Describe*", "ssm:GetParameters" ], "Resource": "*" } ] }' > /tmp/iam-role-policy 
-             ```
-	 - Attach the policy to the 'UdacityFlaskDeployCBKubectlRole'. You can do this using awscli:
-	     ```bash
-    
-             aws iam put-role-policy --role-name UdacityFlaskDeployCBKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
-              ```
+    - Set an environment variable `ACCOUNT_ID` to the value of your AWS account id. You can do this with awscli:
+        ```bash
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        ```
+    - Create a role policy document that allows the actions "eks:Describe*" and "ssm:GetParameters". You can do this by setting an environment variable with the role policy:
+        ```bash
+        what
+        ```
+        ```bash
+        TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
+        ```
+    - Create a role named 'UdacityFlaskDeployCBKubectlRole' using the role policy document:
+        ```bash
+        aws iam create-role --role-name UdacityFlaskDeployCBKubectlRole --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
+        ```
+    - Create a role policy document that also allows the actions "eks:Describe*" and "ssm:GetParameters". You can create the document in your tmp directory:
+        ```bash
+        echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "eks:Describe*", "ssm:GetParameters" ], "Resource": "*" } ] }' > /tmp/iam-role-policy 
+        ```
+    - Attach the policy to the 'UdacityFlaskDeployCBKubectlRole'. You can do this using awscli:
+        ```bash   
+        aws iam put-role-policy --role-name UdacityFlaskDeployCBKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
+        ```
     You have now created a role named 'UdacityFlaskDeployCBKubectlRole'
 
 2. Grant the role access to the cluster.
 The 'aws-auth ConfigMap' is used to grant role based access control to your cluster. 
-
-    ```bash
-    ROLE="    - rolearn: arn:aws:iam::$ACCOUNT_ID:role/UdacityFlaskDeployCBKubectlRole\n      username: build\n      groups:\n        - system:masters"
-    kubectl get -n kube-system configmap/aws-auth -o yaml | awk "/mapRoles: \|/{print;print \"$ROLE\";next}1" > /tmp/aws-auth-patch.yml
-    kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
-    ```
+    - Get the current configmap and save it to a file:
+        ```bash
+        kubectl get -n kube-system configmap/aws-auth -o yaml > /tmp/aws-auth-patch.yml
+        ```
+    - In the data/mapRoles section of this document add, replacing `<ACCOUNT ID>` with your account id:
+        ```yml
+        - rolearn: arn:aws:iam::<ACCOUNT ID>:role/UdacityFlaskDeployCBKubectlRole
+          username: build
+          groups:
+            - system:masters
+        ```
+    - Now update your cluster's configmap:
+        ```bash
+        kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
+        ```
 
 3. Generate a GitHub access token.
  A Github acces token will allow CodePipeline to monitor when a repo is changed. A token can be generated [here](https://github.com/settings/tokens/=).
