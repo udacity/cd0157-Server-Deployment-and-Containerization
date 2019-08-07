@@ -8,9 +8,13 @@ import pytest
 import main
 
 SECRET = 'TestSecret'
-TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjEzMDY3OTAsIm5iZiI6MTU2MDA5NzE5MCwiZW1haWwiOiJ3b2xmQHRoZWRvb3IuY29tIn0.IpM4VMnqIgOoQeJxUbLT-cRcAjK41jronkVrqRLFmmk'
+TOKEN = '''eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjEzMDY3OTAsIm5i
+ZiI6MTU2MDA5NzE5MCwiZW1haWwiOiJ3b2xmQHRoZWRvb3IuY29tIn0.IpM4VMnqIgOoQeJxUbLT
+-cRcAjK41jronkVrqRLFmmk'''
+
 EMAIL = 'wolf@thedoor.com'
 PASSWORD = 'huff-puff'
+
 
 @pytest.fixture
 def client():
@@ -19,7 +23,6 @@ def client():
     client = main.APP.test_client()
 
     yield client
-
 
 
 def test_health(client):
@@ -31,7 +34,7 @@ def test_health(client):
 def test_auth(client):
     body = {'email': EMAIL,
             'password': PASSWORD}
-    response = client.post('/auth', 
+    response = client.post('/auth',
                            data=json.dumps(body),
                            content_type='application/json')
 
