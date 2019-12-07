@@ -3,13 +3,11 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Description: EKSWSV1
 
-
 Parameters:
-
   EksClusterName:
     Type: String
     Description: The name of the EKS cluster created
-    Default: 
+    Default: simple-jwt-api
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter the EKS cluster name
@@ -17,7 +15,7 @@ Parameters:
   GitSourceRepo:
     Type: String
     Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
-    Default: 
+    Default: FSND-Deploy-Flask-App-to-Kubernetes-Using-EKS
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub repository name
@@ -40,7 +38,7 @@ Parameters:
 
   GitHubUser:
     Type: String
-    Default:
+    Default: dharmykoya
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
@@ -56,12 +54,11 @@ Parameters:
 
   KubectlRoleName:
     Type: String
-    Default: 
+    Default: UdacityFlaskDeployCBKubectlRole
     Description: IAM role used by kubectl to interact with EKS cluster
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: You must enter a kubectl IAM role
-
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -101,9 +98,7 @@ Metadata:
       EksClusterName:
         default: EKS cluster name
 
-
 Resources:
-
   EcrDockerRepository:
     Type: AWS::ECR::Repository
     DeletionPolicy: Retain
@@ -130,22 +125,18 @@ Resources:
               'LogicalResourceId': event['LogicalResourceId'],
               'Data': {"Message": "Resource creation successful!"},
             }
-
             client = boto3.client('iam')
             try:
               if event['RequestType'] == 'Create':
                 kubectl_role_name = event['ResourceProperties']['KubectlRoleName']
                 build_role_arn = event['ResourceProperties']['CodeBuildServiceRoleArn']
-
                 assume = client.get_role(RoleName = kubectl_role_name)
                 assume_doc = assume['Role']['AssumeRolePolicyDocument']
                 roles = [ { 'Effect': 'Allow', 'Principal': { 'AWS': build_role_arn }, 'Action': 'sts:AssumeRole' } ]
-
                 for statement in assume_doc['Statement']:
                   if 'AWS' in statement['Principal']:
                     if statement['Principal']['AWS'].startswith('arn:aws:iam:'):
                       roles.append(statement)
-
                 assume_doc['Statement'] = roles
                 update_response = client.update_assume_role_policy(RoleName = kubectl_role_name, PolicyDocument = json.dumps(assume_doc))
             except Exception as e:
@@ -153,12 +144,10 @@ Resources:
               response['Status'] = 'FAILED'
               response["Reason"] = e
               response['Data'] = {"Message": "Resource creation failed"}
-
             response_body = json.dumps(response)
             headers = {'content-type': '', "content-length": len(response_body) }
             put_response = requests.put(event['ResponseURL'], headers=headers, data=response_body)
             return response
-
       Handler: index.handler
       Role: !GetAtt CustomResourceLambdaExecutionRole.Arn
       Runtime: python2.7
@@ -256,25 +245,25 @@ Resources:
                 Effect: Allow
                 Action:
                   - sts:AssumeRole
-              - Resource: '*'
+              - Resource: "*"
                 Effect: Allow
                 Action:
                   - eks:Describe*
-              - Resource: '*'
+              - Resource: "*"
                 Effect: Allow
                 Action:
                   - ssm:GetParameters
-              - Resource: '*'
+              - Resource: "*"
                 Effect: Allow
                 Action:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-              - Resource: '*'
+              - Resource: "*"
                 Effect: Allow
                 Action:
                   - ecr:GetAuthorizationToken
-              - Resource: '*'
+              - Resource: "*"
                 Effect: Allow
                 Action:
                   - ec2:CreateNetworkInterface
@@ -367,4 +356,3 @@ Resources:
               OutputArtifacts:
                 - Name: BuildOutput
               RunOrder: 1
-    DependsOn: CodeBuildProject
