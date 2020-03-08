@@ -1,6 +1,9 @@
 ---
 version: 0.2
 
+env:
+  parameter-store:         
+    JWT_SECRET: JWT_SECRET
 
 phases:
   install:
@@ -16,6 +19,8 @@ phases:
         - sed -i 's@CONTAINER_IMAGE@'"$REPOSITORY_URI:$TAG"'@' simple_jwt_api.yml
         - $(aws ecr get-login --no-include-email)
         - export KUBECONFIG=$HOME/.kube/config
+        - pip3 install -r requirements.txt
+        - pytest test_main.py
   build:
     commands:
       - docker build --tag $REPOSITORY_URI:$TAG .
@@ -35,6 +40,4 @@ phases:
       - ls
 artifacts:
   files: build.json
-env:
-  parameter-store:         
-    JWT_SECRET: JWT_SECRET
+
