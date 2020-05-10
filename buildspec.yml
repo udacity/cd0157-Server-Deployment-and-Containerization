@@ -11,8 +11,16 @@ phases:
       - curl -sS -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl
       - chmod +x ./kubectl ./aws-iam-authenticator
       - export PATH=$PWD/:$PATH
-      - apt-get update && apt-get -y install jq python3-pip python3-dev && pip3 install --upgrade awscli
-  pre_build:
+      - apt-get -y remove python3.4 python3-dev
+      - apt-get update
+      - apt-get -y install software-properties-common
+      - add-apt-repository ppa:deadsnakes/ppa
+      - apt-get -y install python3.5 python3.5-dev jq
+      - curl https://bootstrap.pypa.io/ez_setup.py -o - | python3.5
+      - easy_install pip
+      - pip3 install --upgrade awscli
+      - ln -sf /usr/bin/python3.5 /usr/local/bin/python3
+  pre_build
       commands:
         - TAG="$REPOSITORY_NAME.$REPOSITORY_BRANCH.$ENVIRONMENT_NAME.$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
         - sed -i 's@CONTAINER_IMAGE@'"$REPOSITORY_URI:$TAG"'@' simple_jwt_api.yml
