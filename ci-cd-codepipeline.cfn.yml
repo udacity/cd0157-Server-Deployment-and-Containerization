@@ -1,4 +1,3 @@
----
 AWSTemplateFormatVersion: 2010-09-09
 
 Description: EKSWSV1
@@ -56,7 +55,7 @@ Parameters:
 
   KubectlRoleName:
     Type: String
-    Default: manuelamercado
+    Default: UdacityFlaskDeployCBKubectlRole
     Description: IAM role used by kubectl to interact with EKS cluster
     MinLength: 3
     MaxLength: 100
