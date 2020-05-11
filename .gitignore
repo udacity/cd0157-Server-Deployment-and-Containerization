@@ -17,6 +17,7 @@ _mailinglist
 docs/_build/
 __pycache__
 aws-auth-patch*
+iam-role-policy*
 
 # Coverage reports
 htmlcov/
