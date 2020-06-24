@@ -2,3 +2,4 @@ pyjwt
 flask
 gunicorn
 pytest
+typing
