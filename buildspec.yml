@@ -4,6 +4,8 @@ version: 0.2
 
 phases:
   install:
+    runtime version:
+      python:3.7
     commands:
       - curl -sS -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator
       - curl -sS -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl
@@ -16,7 +18,7 @@ phases:
         - sed -i 's@CONTAINER_IMAGE@'"$REPOSITORY_URI:$TAG"'@' simple_jwt_api.yml
         - $(aws ecr get-login --no-include-email)
         - export KUBECONFIG=$HOME/.kube/config
-        - pip3 install -r requirements.txt  
+        - pip install -r requirements.txt  
         - pytest test_main.py
   build:
     commands:
