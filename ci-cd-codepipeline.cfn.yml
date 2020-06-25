@@ -6,7 +6,7 @@ Description: EKSWSV1
 
 Parameters:
 
-  EksClusterName:
+  EksClusterName: simple-jwt-api
     Type: String
     Description: The name of the EKS cluster created
     Default: 
@@ -14,7 +14,7 @@ Parameters:
     MaxLength: 100
     ConstraintDescription: You must enter the EKS cluster name
 
-  GitSourceRepo:
+  GitSourceRepo: FSND-Deploy-Flask-App-to-Kubernetes-Using-EKS
     Type: String
     Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
     Default: 
@@ -38,7 +38,7 @@ Parameters:
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub personal access token
 
-  GitHubUser:
+  GitHubUser: refinedblessing
     Type: String
     Default:
     Description: GitHub username or organization
@@ -54,7 +54,7 @@ Parameters:
     MaxLength: 100
     ConstraintDescription: You must enter a CodeBuild Docker image
 
-  KubectlRoleName:
+  KubectlRoleName: UdacityFlaskDeployCBKubectlRole
     Type: String
     Default: 
     Description: IAM role used by kubectl to interact with EKS cluster
