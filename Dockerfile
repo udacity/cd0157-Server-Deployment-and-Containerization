@@ -1,6 +1,5 @@
 FROM python:stretch
 
-RUN mkdir /app
 
 COPY . /app
 WORKDIR /app
