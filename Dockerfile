@@ -5,7 +5,7 @@ RUN mkdir /app
 COPY . /app
 WORKDIR /app
 
-RUN apt update
+RUN apt-get update -y
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
