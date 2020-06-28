@@ -36,5 +36,8 @@ spec:
             privileged: false
             readOnlyRootFilesystem: false
             allowPrivilegeEscalation: false
+          env:
+          - name: JWT_SECRET
+            value: JWT_SECRET_VALUE
           ports:
             - containerPort: 8080
