@@ -40,7 +40,7 @@ Parameters:
 
   GitHubUser:
     Type: String
-    Default: john0isaac
+    Default: John0Isaac
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
