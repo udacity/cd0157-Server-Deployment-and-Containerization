@@ -16,10 +16,7 @@ _mailinglist
 .idea/
 docs/_build/
 __pycache__
-<<<<<<< HEAD
-
-=======
->>>>>>> a7cb7538299d9a16df9237d540df05a6cbedf888
+.env_file
 
 # Coverage reports
 htmlcov/
