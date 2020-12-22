@@ -8,9 +8,9 @@ import pytest
 import main
 
 SECRET = 'TestSecret'
-TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjEzMDY3OTAsIm5iZiI6MTU2MDA5NzE5MCwiZW1haWwiOiJ3b2xmQHRoZWRvb3IuY29tIn0.IpM4VMnqIgOoQeJxUbLT-cRcAjK41jronkVrqRLFmmk'
-EMAIL = 'wolf@thedoor.com'
-PASSWORD = 'huff-puff'
+TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDk4NDA2NTAsIm5iZiI6MTYwODYzMTA1MCwiZW1haWwiOiJya29saWpuQGdtYWlsLmNvbSJ9.LB6eOtQ4McaFIllcF5AbGRNrFhSkrkydv3NkMucLkik'
+EMAIL = 'rkolijn@gmail.com'
+PASSWORD = 'qw2qw2qw'
 
 
 @pytest.fixture
