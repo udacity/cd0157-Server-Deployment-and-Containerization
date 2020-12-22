@@ -10,7 +10,7 @@ import main
 SECRET = 'TestSecret'
 TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDk4NDA2NTAsIm5iZiI6MTYwODYzMTA1MCwiZW1haWwiOiJya29saWpuQGdtYWlsLmNvbSJ9.LB6eOtQ4McaFIllcF5AbGRNrFhSkrkydv3NkMucLkik'
 EMAIL = 'rkolijn@gmail.com'
-PASSWORD = 'qw2qw2qw'
+PASSWORD = 'testron'
 
 
 @pytest.fixture
