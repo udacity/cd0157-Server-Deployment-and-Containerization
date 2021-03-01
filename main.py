@@ -7,13 +7,14 @@ import logging
 import datetime
 import functools
 import jwt
+from base64 import b64decode
 
 # pylint: disable=import-error
 from flask import Flask, jsonify, request, abort
 
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'abc123abc1234')
-LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
 
 
 def _logger():
@@ -81,7 +82,6 @@ def auth():
     user_data = body
 
     return jsonify(token=_get_jwt(user_data))
-    #.decode('utf-8'))
 
 
 @APP.route('/contents', methods=['GET'])
@@ -95,7 +95,8 @@ def decode_jwt():
     token = str.replace(str(data), 'Bearer ', '')
     try:
         data = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
-    except: # pylint: disable=bare-except
+    except Exception as e: # pylint: disable=bare-except
+        print(e)
         abort(401)
 
 
