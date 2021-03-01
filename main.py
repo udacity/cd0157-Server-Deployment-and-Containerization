@@ -80,7 +80,8 @@ def auth():
 
     user_data = body
 
-    return jsonify(token=_get_jwt(user_data).decode('utf-8'))
+    return jsonify(token=_get_jwt(user_data))
+    #.decode('utf-8'))
 
 
 @APP.route('/contents', methods=['GET'])
