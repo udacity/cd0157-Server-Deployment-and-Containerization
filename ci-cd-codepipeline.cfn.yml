@@ -161,7 +161,7 @@ Resources:
 
       Handler: index.handler
       Role: !GetAtt CustomResourceLambdaExecutionRole.Arn
-      Runtime: python2.7
+      Runtime: python3.7
       Timeout: 300
 
   CustomResourceLambdaExecutionRole:
