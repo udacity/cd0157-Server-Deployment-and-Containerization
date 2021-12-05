@@ -30,3 +30,4 @@ htmlcov/
 
 .github/**
 Mis/*
+*.swp
