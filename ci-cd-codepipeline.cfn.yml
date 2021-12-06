@@ -24,7 +24,7 @@ Parameters:
 
   GitBranch:
     Type: String
-    Default: master
+    Default: dev-01
     Description: GitHub git repository branch - change triggers a new build
     MinLength: 1
     MaxLength: 100
@@ -33,14 +33,14 @@ Parameters:
   GitHubToken:
     Type: String
     NoEcho: true
-    Description: GitHub API token - see https://github.com/blog/1509-personal-api-tokens
+    Description: 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
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub personal access token
 
   GitHubUser:
     Type: String
-    Default: SudKul
+    Default: Lancer523
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
