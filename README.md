@@ -36,3 +36,11 @@ Completing the project involves several steps:
 6. Create a CodeBuild stage which will build, test, and deploy your code
 
 For more detail about each of these steps, see the project lesson.
+
+## Automatic virtualenv activation in WSL terminal (workaround for Intellij)
+If venv file exists in a directory WSL is started and contains the name of valid pyenv virtualenv without trailing newline, it will be activated due to the following section in ~/.profile, ~/.bash_profile or ~/.bashrc:
+```shell
+if [ -f "venv" ] ; then
+    pyenv activate $(cat venv)
+fi
+```
