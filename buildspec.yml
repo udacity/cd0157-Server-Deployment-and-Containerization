@@ -11,16 +11,23 @@ phases:
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - curl -sS -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/aws-iam-authenticator
-      # Get latest stable release kubectl      
+      # Download the latest stable release kubectl      
       # - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       # You must use a kubectl version that is within one minor version difference of your Amazon EKS cluster control plane. 
       # For example, a 1.21 kubectl client works with Kubernetes 1.20, 1.21 and 1.22 clusters.
-      # For example, to download a specific version v1.23.6 on Linux, type:
+      # For example, to download a specific version v1.23.6 on Linux, use:
       - curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl
+      # Download the kubectl checksum file
+      - curl -LO "https://dl.k8s.io/v1.23.6/bin/linux/amd64/kubectl.sha256"
+      # Validate the kubectl binary against the checksum file
+      - echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+      # Install kubectl
       - chmod +x ./kubectl ./aws-iam-authenticator
-      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
-      - echo `kubectl version --short --client`
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin  
+      - echo $PATH
       - export PATH=$PWD/:$PATH
+      - echo $PATH
+      - echo `kubectl version --short --client`
       - python -m pip install --upgrade --force pip
       - apt-get update && apt-get -y install jq  && pip install --upgrade awscli
   pre_build:
