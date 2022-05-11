@@ -14,8 +14,9 @@ phases:
       # Get latest stable release kubectl
       #- curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
       # Command for specific kubectl version
-      - curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03-09/bin/darwin/amd64/kubectl
+      - curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl
       - chmod +x ./kubectl ./aws-iam-authenticator
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
       - echo `kubectl version --short --client`
       - export PATH=$PWD/:$PATH
       - python -m pip install --upgrade --force pip
@@ -26,6 +27,7 @@ phases:
         - sed -i 's@CONTAINER_IMAGE@'"$REPOSITORY_URI:$TAG"'@' simple_jwt_api.yml
         - $(aws ecr get-login --no-include-email)
         - export KUBECONFIG=$HOME/.kube/config
+        - echo `ls -l`
   build:
     commands:
       - docker build --tag $REPOSITORY_URI:$TAG .
