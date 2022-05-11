@@ -60,13 +60,17 @@ cd cd0157-Server-Deployment-and-Containerization/
 1. These are the files relevant for the current project:
 ```bash
 .
-├── main.py		     # Sample Flask application
-├── requirements.txt    # Dependencies
-├── aws-auth-patch.yml  # No change needed here. This is a sample file 
-├── buildspec.yml       # No change needed here
-├── ci-cd-codepipeline.cfn.yml   # TODO - YAML template to create CodePipeline pipeline and CodeBuild resources
-├── simple_jwt_api.yml  # No change needed here 
-└── test_main.py      
+├── Dockerfile
+├── README.md
+├── aws-auth-patch.yml
+├── buildspec.yml
+├── ci-cd-codepipeline.cfn.yml
+├── iam-role-policy.json
+├── main.py
+├── requirements.txt
+├── simple_jwt_api.yml
+├── test_main.py
+└── trust.json     
 ```
 
      
