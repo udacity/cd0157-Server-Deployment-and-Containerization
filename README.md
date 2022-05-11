@@ -60,11 +60,11 @@ cd cd0157-Server-Deployment-and-Containerization/
 1. These are the files relevant for the current project:
 ```bash
 .
-├── Dockerfile
+├── Dockerfile 
 ├── README.md
-├── aws-auth-patch.yml
-├── buildspec.yml
-├── ci-cd-codepipeline.cfn.yml
+├── aws-auth-patch.yml #ToDo
+├── buildspec.yml  #ToDo
+├── ci-cd-codepipeline.cfn.yml #ToDo
 ├── iam-role-policy.json
 ├── main.py
 ├── requirements.txt
