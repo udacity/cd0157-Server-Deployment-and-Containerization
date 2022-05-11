@@ -17,7 +17,7 @@ phases:
       # For example, a 1.21 kubectl client works with Kubernetes 1.20, 1.21 and 1.22 clusters.
       # Ref: https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html OR https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
       # To download a specific version v1.22.0 on Linux, use:
-      - curl -LO https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
+      - curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl
       # Download the kubectl checksum file
       - curl -LO "https://dl.k8s.io/v1.23.6/bin/linux/amd64/kubectl.sha256"
       # Validate the kubectl binary against the checksum file
