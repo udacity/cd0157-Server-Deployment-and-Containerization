@@ -11,10 +11,12 @@ phases:
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - curl -sS -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/aws-iam-authenticator
-      # Get latest stable release kubectl
-      #- curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-      # Command for specific kubectl version
-      - curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl
+      # Get latest stable release kubectl      
+      # - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      # You must use a kubectl version that is within one minor version difference of your Amazon EKS cluster control plane. 
+      # For example, a 1.21 kubectl client works with Kubernetes 1.20, 1.21 and 1.22 clusters.
+      # For example, to download a specific version v1.23.6 on Linux, type:
+      - curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl
       - chmod +x ./kubectl ./aws-iam-authenticator
       - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
       - echo `kubectl version --short --client`
