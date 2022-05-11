@@ -24,8 +24,10 @@ phases:
       - echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
       # Install kubectl
       - chmod +x ./kubectl ./aws-iam-authenticator      
-      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin  
-      - echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+      # - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+      - export PATH=$PWD/:$PATH  
+      - python --version
+      - echo 'export PATH=$PWD/:$PATH' >> $HOME/.bashrc
       - echo `kubectl version --short --client`
       - python -m pip install --upgrade --force pip
       - apt-get update && apt-get -y install jq  && pip install --upgrade awscli
