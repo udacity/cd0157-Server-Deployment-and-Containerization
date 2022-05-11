@@ -1,4 +1,9 @@
 pyjwt==1.7.1
 flask==1.1.2
+Jinja2<3.0.0
+MarkupSafe<2.0.0
+ruamel.yaml==0.16.5
+itsdangerous==2.0.1
+werkzeug==2.0.3
 gunicorn==20.0.4
 pytest==6.2.2
