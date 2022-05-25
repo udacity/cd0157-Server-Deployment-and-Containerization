@@ -1,4 +1,4 @@
-pyjwt==1.7.1
+pyjwt==2.4.0
 flask==1.1.2
 Jinja2<3.0.0
 MarkupSafe<2.0.0
