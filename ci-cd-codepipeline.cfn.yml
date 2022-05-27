@@ -40,7 +40,7 @@ Parameters:
 
   GitHubUser:
     Type: String
-    Default: SudKul
+    Default: nishantk12
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
