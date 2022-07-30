@@ -3,14 +3,15 @@
 
 apiVersion: v1
 data:
-  mapRoles: |
+  mapRoles:
     - groups:
       - system:bootstrappers
       - system:nodes
-      rolearn: arn:aws:iam::519002666132:role/eksctl-simple-jwt-api-nodegroup-n-NodeInstanceRole-1DBHED9TMYRZZ
+      rolearn: arn:aws:iam::175886877960:role/eksctl-simple-jwt-api-nodegroup-n-NodeInstanceRole-1DBHED9TMYRZZ
       username: system:node:{{EC2PrivateDNSName}}
+    - groups:
       - system:masters
-      rolearn: arn:aws:iam::519002666132:role/UdacityFlaskDeployCBKubectlRole
+      rolearn: arn:aws:iam::175886877960:role/UdacityFlaskDeployCBKubectlRole
       username: build
 kind: ConfigMap
 metadata:
