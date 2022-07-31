@@ -32,3 +32,5 @@ htmlcov/
 
 .env_file
 venv/
+AWSCLIV2.pkg
+kubectl.sha256
