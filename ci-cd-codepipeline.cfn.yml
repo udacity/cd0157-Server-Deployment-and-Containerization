@@ -14,7 +14,7 @@ Parameters:
     MaxLength: 100
     ConstraintDescription: You must enter the EKS cluster name
 
-  GitSourceRepo:
+  GitSourceRepo: 
     Type: String
     Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
     Default: cd0157-Server-Deployment-and-Containerization
@@ -32,7 +32,7 @@ Parameters:
 
   GitHubToken:
     Type: String
-    NoEcho: true
+    Default: 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
     Description: GitHub API token - see https://github.com/blog/1509-personal-api-tokens
     MinLength: 3
     MaxLength: 100
@@ -40,7 +40,7 @@ Parameters:
 
   GitHubUser:
     Type: String
-    Default: SudKul
+    Default: MugAbdoul
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
