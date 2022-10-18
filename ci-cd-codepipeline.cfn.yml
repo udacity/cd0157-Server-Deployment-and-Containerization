@@ -24,7 +24,7 @@ Parameters:
 
   GitBranch:
     Type: String
-    Default: master
+    Default: main
     Description: GitHub git repository branch - change triggers a new build
     MinLength: 1
     MaxLength: 100
@@ -40,7 +40,7 @@ Parameters:
 
   GitHubUser:
     Type: String
-    Default: SudKul
+    Default: MartinDeMundia
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
