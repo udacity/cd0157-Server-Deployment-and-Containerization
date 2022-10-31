@@ -30,7 +30,7 @@ spec:
         app: simple-jwt-api
     spec:
       containers:
-        - name: myContainer
+        - name: simple-jwt-api
           image: ogazboiz/myimage
           securityContext:
             privileged: false
