@@ -33,3 +33,6 @@ htmlcov/
 #python3.7 virtual env
 ./MyEnv
 MyEnv/
+
+#minikube
+/minikube-linux-amd64/
