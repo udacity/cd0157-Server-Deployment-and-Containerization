@@ -31,7 +31,11 @@ spec:
     spec:
       containers:
         - name: simple-jwt-api
+<<<<<<< HEAD
           image: CONTAINER_IMAGE
+=======
+          image: myContainer
+>>>>>>> 8f751c1 (First Commit)
           securityContext:
             privileged: false
             readOnlyRootFilesystem: false

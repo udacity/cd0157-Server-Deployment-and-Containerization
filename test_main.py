@@ -9,6 +9,8 @@ import main
 
 SECRET = 'TestSecret'
 TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjEzMDY3OTAsIm5iZiI6MTU2MDA5NzE5MCwiZW1haWwiOiJ3b2xmQHRoZWRvb3IuY29tIn0.IpM4VMnqIgOoQeJxUbLT-cRcAjK41jronkVrqRLFmmk'
+SECRET = 'AKIAS7YQXMXMOYEIRRAZ'
+TOKEN = 'VvVJYXPSusU8emaxFEDnY6HLeTpkH4QzUHPdrcy7'
 EMAIL = 'wolf@thedoor.com'
 PASSWORD = 'huff-puff'
 
