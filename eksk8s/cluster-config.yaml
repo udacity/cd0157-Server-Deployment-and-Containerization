@@ -1,0 +1,31 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eks-cluster
+  region: us-west-1
+
+vpc:
+  id: vpc-04e8935eb17607398
+  subnets:
+    public:
+      us-west-1a:
+          id: subnet-08375f54b10ac81a2
+      us-west-1b:
+          id: subnet-0a8eea0bb2b8bd056
+  clusterEndpoints:
+    publicAccess: true
+  securityGroup: sg-074fc7db95c8a8141
+
+nodeGroups:
+  - name: eks-nodegroup
+    iam:
+      instanceRoleARN: arn:aws:iam::621328949821:role/eks-nodegroup-role
+    instanceType: t2.micro
+    desiredCapacity: 2
+    ssh:
+      allow: true
+      publicKeyPath: ~/.ssh/k8s.pub
+    subnets:
+      - subnet-08375f54b10ac81a2
+      - subnet-0a8eea0bb2b8bd056
