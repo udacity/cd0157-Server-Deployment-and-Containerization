@@ -11,9 +11,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Create the role for the trust policy
-        uses: aws-actions/aws-cli@v2
-        with:
-          args: aws iam create-role --role-name cv-eks-cluster-role --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
+        run: aws iam create-role --role-name cv-eks-cluster-role --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
