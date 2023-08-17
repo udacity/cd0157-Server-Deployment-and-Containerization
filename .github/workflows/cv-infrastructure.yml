@@ -4,11 +4,11 @@ on:
     branches:
       - master 
 jobs:
-  setup:
+  setup_aws_credentials:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.3
       
       - name: Create the role for the trust policy
         run: aws iam create-role --role-name cv-eks-cluster-role --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
