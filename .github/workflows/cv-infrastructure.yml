@@ -17,10 +17,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cat $HOME/.aws/credentials
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID}
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY}
           aws configure set default.region us-west-1
+          cat $HOME/.aws/credentials
 
       - name: Create the role for the trust policy
         run: aws iam create-role --role-name cv-eks-cluster-role --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
