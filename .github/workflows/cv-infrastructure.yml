@@ -24,5 +24,6 @@ jobs:
       - name: Create the role for the trust policy
         run: |
           aws sts get-caller-identity
+          cat ${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
           aws iam create-role --role-name cv-eks-cluster-role --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json --region us-west-1
       
