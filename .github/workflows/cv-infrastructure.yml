@@ -11,8 +11,6 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
       CLUSTER_ROLE_NAME: cv-eks-cluster-role
       CLUSTER_POLICY_NAME: cv-eks-cluster-policy
       NODEGROUP_ROLE_NAME: cv-eks-nodegroup-role
@@ -23,12 +21,6 @@ jobs:
 
       - name: Setup the runner
         run: sh $GITHUB_WORKSPACE/.github/scripts/eksctl-install.sh
-
-      - name: Setup the keys used to create the k8s cluster
-        run: |
-          mkdir $HOME/.ssh/
-          echo $SSH_PRIVATE_KEY > $HOME/.ssh/k8s
-          echo $SSH_PUBLIC_KEY > $HOME/.ssh/k8s.pub
 
       - name: Setup AWS credentials
         run: |
@@ -52,6 +44,22 @@ jobs:
         run: |
           aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
 
+  create_the_cluster:
+    runs-on: ubuntu-latest
+    needs: setup_roles_and_policies
+    environment:
+      name: develop
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+    steps:
+      - name: Setup the keys used to create the k8s cluster
+        run: |
+          mkdir $HOME/.ssh/
+          echo $SSH_PRIVATE_KEY > $HOME/.ssh/k8s
+          echo $SSH_PUBLIC_KEY > $HOME/.ssh/k8s.pub
       - name: Creates the k8s cluster using eksctl
         run: |
           eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
