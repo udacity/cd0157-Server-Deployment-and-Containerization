@@ -40,3 +40,7 @@ jobs:
       - name: Attaches the policy for the node-group
         run: |
           aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
+
+      - name: Creates the k8s cluster using eksctl
+        run: |
+          eksctl --version

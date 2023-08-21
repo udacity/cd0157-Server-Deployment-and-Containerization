@@ -2,7 +2,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: eks-cluster
+  name: cv-eks-cluster
   region: us-west-1
 
 vpc:
@@ -18,9 +18,9 @@ vpc:
   securityGroup: sg-074fc7db95c8a8141
 
 nodeGroups:
-  - name: eks-nodegroup
+  - name: cv-eks-nodegroup
     iam:
-      instanceRoleARN: arn:aws:iam::621328949821:role/eks-nodegroup-role
+      instanceRoleARN: arn:aws:iam::621328949821:role/cv-eks-nodegroup-role
     instanceType: t2.micro
     desiredCapacity: 2
     ssh:
