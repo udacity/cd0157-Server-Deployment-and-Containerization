@@ -19,6 +19,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
 
+      - name: Setups the runner
+        run: ./scripts/pepe.sh
+
       - name: Setup AWS credentials
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID}
