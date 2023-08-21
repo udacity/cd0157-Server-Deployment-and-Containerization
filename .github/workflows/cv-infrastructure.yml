@@ -4,7 +4,7 @@ on:
     branches:
       - master 
 jobs:
-  setup_aws_credentials:
+  setup_roles_and_policies:
     runs-on: ubuntu-latest
     environment:
       name: develop
@@ -21,6 +21,10 @@ jobs:
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY}
           aws configure set default.region us-west-1
 
-      - name: Create the role for the trust policy
+      - name: Creates the role for the trust policy
         run: |
           aws iam create-role --role-name cv-eks-cluster-role --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
+
+      - name: Attaches the policy to the new role
+        run: |
+          aws iam put-role-policy --role-name eks-cluster-role --policy-name eks-cluster-policy --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
