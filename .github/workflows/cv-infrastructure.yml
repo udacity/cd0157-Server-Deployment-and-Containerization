@@ -46,4 +46,4 @@ jobs:
 
       - name: Creates the k8s cluster using eksctl
         run: |
-          eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/eksctl-config.yaml
+          eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
