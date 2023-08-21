@@ -2,7 +2,7 @@ name: Create AWS infrastructure
 on:
   push:
     branches:
-      - master 
+      - infrastructure
 jobs:
   setup_roles_and_policies:
     runs-on: ubuntu-latest
