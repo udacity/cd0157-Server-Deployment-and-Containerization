@@ -13,6 +13,8 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CLUSTER_ROLE_NAME: cv-eks-cluster-role
       CLUSTER_POLICY_NAME: cv-eks-cluster-policy
+      NODEGROUP_ROLE_NAME: cv-eks-nodegroup-role
+      NODEGROUP_POLICY_NAME: cv-eks-nodegroup-policy
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
@@ -23,10 +25,18 @@ jobs:
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY}
           aws configure set default.region us-west-1
 
-      - name: Creates the role for the trust policy
+      - name: Creates the role that will assume the trust policy to deal with the cluster
         run: |
           aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
 
       - name: Attaches the policy to the new role
         run: |
           aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
+
+      - name: Creates the role to manage the node-group
+        run: |
+          aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json
+
+      - name: Attaches the policy for the node-group
+        run: |
+          aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
