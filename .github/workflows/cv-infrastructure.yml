@@ -26,6 +26,7 @@ jobs:
 
       - name: Setup the keys used to create the k8s cluster
         run: |
+          mkdir $HOME/.ssh/
           echo $SSH_PRIVATE_KEY > $HOME/.ssh/k8s
           echo $SSH_PUBLIC_KEY > $HOME/.ssh/k8s.pub
 
