@@ -16,11 +16,11 @@ jobs:
       NODEGROUP_ROLE_NAME: cv-eks-nodegroup-role
       NODEGROUP_POLICY_NAME: cv-eks-nodegroup-policy
     steps:
-      - name: Setup the runner
-        run: sh $GITHUB_WORKSPACE/.github/scripts/kubectl-install.sh
-
       - name: Checkout code
         uses: actions/checkout@v3.5.3
+
+      - name: Setup the runner
+        run: sh $GITHUB_WORKSPACE/.github/scripts/kubectl-install.sh
 
       - name: Setup AWS credentials
         run: |
