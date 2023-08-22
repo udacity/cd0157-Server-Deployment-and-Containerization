@@ -52,6 +52,9 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.5.3
+
       - name: Setup the runner
         run: sh $GITHUB_WORKSPACE/.github/scripts/eksctl-install.sh
 
