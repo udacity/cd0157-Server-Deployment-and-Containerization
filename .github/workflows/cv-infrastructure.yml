@@ -19,9 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
 
-      - name: Setup the runner
-        run: sh $GITHUB_WORKSPACE/.github/scripts/eksctl-install.sh
-
       - name: Setup AWS credentials
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID}
@@ -55,11 +52,15 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
     steps:
+      - name: Setup the runner
+        run: sh $GITHUB_WORKSPACE/.github/scripts/eksctl-install.sh
+
       - name: Setup the keys used to create the k8s cluster
         run: |
           mkdir $HOME/.ssh/
           echo $SSH_PRIVATE_KEY > $HOME/.ssh/k8s
           echo $SSH_PUBLIC_KEY > $HOME/.ssh/k8s.pub
+
       - name: Creates the k8s cluster using eksctl
         run: |
           eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
