@@ -80,7 +80,10 @@ jobs:
 
       - name: Encrypts the kubeconfig file
         run: |
-          echo "abc" > ${HOME}/.kube/config
+          mkdir ${HOME}/.kube/
+          cat << EOF > ${HOME}/.kube/config
+          Line1
+          EOF
           gpg --symmetric --armor --output kube_config.gpg ${HOME}/.kube/config
 
       - name: Pushes kubeconfig artifact
