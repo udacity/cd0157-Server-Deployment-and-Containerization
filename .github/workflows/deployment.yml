@@ -30,10 +30,9 @@ jobs:
           aws configure set default.region us-west-1
 
       - name: Download Artifact
-        uses: actions/download-artifact@v2.1.1
+        uses: dawidd6/action-download-artifact@v2.27.0
         with:
-          name: kube_config.enc
-          path: kube_config.enc  # Specify the directory to download the artifact to
+          branch: infrastructure
 
       - name: Restore the kubeconfig file
         run: |
