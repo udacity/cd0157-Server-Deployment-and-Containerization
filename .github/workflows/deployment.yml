@@ -32,7 +32,7 @@ jobs:
       - name: Download Artifact
         uses: dawidd6/action-download-artifact@v2.27.0
         with:
-          branch: infrastructure
+          workflow: cv-infrastructure.yml
 
       - name: Restore the kubeconfig file
         run: |
