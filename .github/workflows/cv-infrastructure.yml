@@ -5,6 +5,7 @@ on:
       - infrastructure
 jobs:
   setup_roles_and_policies:
+    if: false
     runs-on: ubuntu-latest
     environment:
       name: develop
@@ -52,6 +53,7 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
       RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
     steps:
       - name: Checkout code
@@ -69,13 +71,16 @@ jobs:
           echo ${SSH_PUBLIC_KEY} > ${HOME}/.ssh/k8s.pub
 
       - name: Import the gpg keys
-        run: echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import
+        run: |
+          echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import
+          echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
 
       - name: Creates the k8s cluster using eksctl
+        if: false
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
 
       - name: Encrypts the kubeconfig file
-        run: gpg --recipient ${RECIPIENT_EMAIL} --encrypt $HOME/.kube/config
+        run: gpg --symmetric --armor --output kube_config.gpg $HOME/.kube/config
 
       - name: Pushes kubeconfig artifact
         uses: actions/upload-artifact@v3.1.2
