@@ -69,7 +69,7 @@ jobs:
           echo ${SSH_PUBLIC_KEY} > ${HOME}/.ssh/k8s.pub
 
       - name: Import the gpg keys
-        run: echo `echo ${GPG_PRIVATE_KEY} | base64 --decode` | gpg --import
+        run: echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import
 
       - name: Creates the k8s cluster using eksctl
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
