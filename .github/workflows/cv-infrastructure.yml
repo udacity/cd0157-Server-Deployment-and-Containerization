@@ -88,7 +88,7 @@ jobs:
           cat << EOF > ${HOME}/.kube/config
           Line1
           EOF
-          gpg --batch --symmetric --output kube_config.gpg ${HOME}/.kube/config
+          gpg --batch --pinentry-mode loopback --symmetric ${HOME}/.kube/config
 
       - name: Pushes kubeconfig artifact
         uses: actions/upload-artifact@v3.1.2
