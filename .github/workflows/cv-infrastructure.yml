@@ -54,7 +54,7 @@ jobs:
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
       RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-      GPG_TTY: "tty"
+      GPG_TTY: $(tty)
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
