@@ -33,6 +33,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2.27.0
         with:
           workflow: cv-infrastructure.yml
+          name: kube_config.enc
 
       - name: Restore the kubeconfig file
         run: |
