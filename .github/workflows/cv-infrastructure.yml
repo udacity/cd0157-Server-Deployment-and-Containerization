@@ -51,9 +51,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
-      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
-      RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+      PASSPHRASE: ${{ secrets.PASSPHRASE }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
@@ -69,18 +67,9 @@ jobs:
           echo ${SSH_PRIVATE_KEY} > ${HOME}/.ssh/k8s
           echo ${SSH_PUBLIC_KEY} > ${HOME}/.ssh/k8s.pub
 
-      - name: Import the gpg keys
-        run: |
-          echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import
-          echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
-
       - name: Creates the k8s cluster using eksctl
         if: false
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
-
-      - name: Set GPG_TTY
-        run: |
-          export GPG_TTY=$(tty)
 
       - name: Encrypts the kubeconfig file
         run: |
@@ -88,12 +77,8 @@ jobs:
           cat << EOF > ${HOME}/.kube/config
           Line1
           EOF
-          openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${GPG_PRIVATE_KEY}
-          openssl enc -d -aes-256-cbc -in kube_config.enc -out decrypted_file.txt -k ${GPG_PRIVATE_KEY}
-          ls
-          echo ${GITHUB_WORKSPACE}
-          cat decrypted_file.txt
-          pwd
+          openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${PASSPHRASE}
+          openssl enc -d -aes-256-cbc -in kube_config.enc -out decrypted_file.txt -k ${PASSPHRASE}
 
 
       - name: Pushes kubeconfig artifact
