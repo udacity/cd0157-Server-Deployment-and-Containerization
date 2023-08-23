@@ -88,10 +88,13 @@ jobs:
           cat << EOF > ${HOME}/.kube/config
           Line1
           EOF
-          gpg --batch --symmetric --output kube_config.gpg ${HOME}/.kube/config
+          openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ''
+          openssl enc -d -aes-256-cbc -in kube_config.enc -out decrypted_file.txt -k ''
+          cat decrypted_file.txt
+
 
       - name: Pushes kubeconfig artifact
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: kube_config.gpg
+          name: kube_config.enc
           path: ${GITHUB_WORKSPACE}/config.gpg
