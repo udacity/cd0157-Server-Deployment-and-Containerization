@@ -5,7 +5,6 @@ on:
       - infrastructure
 jobs:
   setup_roles_and_policies:
-    if: false
     runs-on: ubuntu-latest
     environment:
       name: develop
@@ -27,20 +26,20 @@ jobs:
           aws configure set default.region us-west-1
 
       - name: Creates the role that will assume the trust policy to deal with the cluster
-        run: |
-          aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
+        if: false
+        run: aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
 
       - name: Attaches the policy to the new role
-        run: |
-          aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
+        if: false
+        run: aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
 
       - name: Creates the role to manage the node-group
-        run: |
-          aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json
+        if: false
+        run: aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json
 
       - name: Attaches the policy for the node-group
-        run: |
-          aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
+        if: false
+        run: aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
 
   create_the_cluster:
     runs-on: ubuntu-latest
@@ -76,6 +75,7 @@ jobs:
           echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
 
       - name: Creates the k8s cluster using eksctl
+        if: false
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
 
       - name: Encrypts the kubeconfig file
