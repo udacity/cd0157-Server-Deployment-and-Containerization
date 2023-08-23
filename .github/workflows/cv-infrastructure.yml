@@ -54,7 +54,6 @@ jobs:
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
       RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-      GPG_TTY: $(tty)
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
@@ -79,13 +78,17 @@ jobs:
         if: false
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
 
+      - name: Set GPG_TTY
+        run: |
+          export GPG_TTY=$(tty)
+
       - name: Encrypts the kubeconfig file
         run: |
           mkdir ${HOME}/.kube/
           cat << EOF > ${HOME}/.kube/config
           Line1
           EOF
-          gpg --symmetric --output kube_config.gpg ${HOME}/.kube/config
+          gpg --batch --symmetric --output kube_config.gpg ${HOME}/.kube/config
 
       - name: Pushes kubeconfig artifact
         uses: actions/upload-artifact@v3.1.2
