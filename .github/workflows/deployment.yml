@@ -29,6 +29,12 @@ jobs:
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY}
           aws configure set default.region us-west-1
 
+      - name: Download Artifact
+        uses: actions/download-artifact@v2.1.1
+        with:
+          name: kube_config.enc
+          path: kube_config.enc  # Specify the directory to download the artifact to
+
       - name: Restore the kubeconfig file
         run: |
           mkdir $HOME/.kube/
