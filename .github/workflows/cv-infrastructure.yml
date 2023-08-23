@@ -85,6 +85,7 @@ jobs:
           cat << EOF > ${HOME}/.kube/config
           Line1
           EOF
+          echo ${GPG_TTY}
           gpg --symmetric --armor --output kube_config.gpg ${HOME}/.kube/config
 
       - name: Pushes kubeconfig artifact
