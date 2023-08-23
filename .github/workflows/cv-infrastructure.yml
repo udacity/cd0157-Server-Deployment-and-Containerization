@@ -26,19 +26,15 @@ jobs:
           aws configure set default.region us-west-1
 
       - name: Creates the role that will assume the trust policy to deal with the cluster
-        if: false
         run: aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
 
       - name: Attaches the policy to the new role
-        if: false
         run: aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
 
       - name: Creates the role to manage the node-group
-        if: false
         run: aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json
 
       - name: Attaches the policy for the node-group
-        if: false
         run: aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
 
   create_the_cluster:
@@ -72,14 +68,7 @@ jobs:
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
 
       - name: Encrypts the kubeconfig file
-        run: |
-          mkdir ${HOME}/.kube/
-          cat << EOF > ${HOME}/.kube/config
-          Line1
-          EOF
-          openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${PASSPHRASE}
-          openssl enc -d -aes-256-cbc -in kube_config.enc -out decrypted_file.txt -k ${PASSPHRASE}
-
+        run: openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${PASSPHRASE}
 
       - name: Pushes kubeconfig artifact
         uses: actions/upload-artifact@v3.1.2
