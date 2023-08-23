@@ -5,8 +5,8 @@ on:
       - infrastructure
 jobs:
   setup_roles_and_policies:
-    runs-on: ubuntu-latest
     if: false
+    runs-on: ubuntu-latest
     environment:
       name: develop
     env:
