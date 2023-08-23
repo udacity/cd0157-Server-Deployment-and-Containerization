@@ -90,6 +90,8 @@ jobs:
           EOF
           openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${GPG_PRIVATE_KEY}
           openssl enc -d -aes-256-cbc -in kube_config.enc -out decrypted_file.txt -k ${GPG_PRIVATE_KEY}
+          ls
+          echo ${GITHUB_WORKSPACE}
           cat decrypted_file.txt
           pwd
 
