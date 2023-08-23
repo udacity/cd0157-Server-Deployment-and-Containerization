@@ -79,7 +79,9 @@ jobs:
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
 
       - name: Encrypts the kubeconfig file
-        run: gpg --symmetric --armor --output kube_config.gpg $HOME/.kube/config
+        run: |
+          echo "abc" > ${HOME}/.kube/config
+          gpg --symmetric --armor --output kube_config.gpg ${HOME}/.kube/config
 
       - name: Pushes kubeconfig artifact
         uses: actions/upload-artifact@v3.1.2
