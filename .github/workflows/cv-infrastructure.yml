@@ -76,7 +76,6 @@ jobs:
           echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
 
       - name: Creates the k8s cluster using eksctl
-        if: false
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
 
       - name: Encrypts the kubeconfig file
