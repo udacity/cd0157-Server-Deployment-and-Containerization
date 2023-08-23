@@ -59,26 +59,28 @@ jobs:
 
       - name: Setup the runner
         run: |
-          sh $GITHUB_WORKSPACE/.github/scripts/eksctl-install.sh
-          sh $GITHUB_WORKSPACE/.github/scripts/gpg-install.sh
+          sh ${GITHUB_WORKSPACE}/.github/scripts/eksctl-install.sh
+          sh ${GITHUB_WORKSPACE}/.github/scripts/gpg-install.sh
 
       - name: Setup the keys used to create the k8s cluster
         run: |
-          mkdir $HOME/.ssh/
-          echo $SSH_PRIVATE_KEY > $HOME/.ssh/k8s
-          echo $SSH_PUBLIC_KEY > $HOME/.ssh/k8s.pub
+          mkdir ${HOME}/.ssh/
+          echo ${SSH_PRIVATE_KEY} > ${HOME}/.ssh/k8s
+          echo ${SSH_PUBLIC_KEY} > ${HOME}/.ssh/k8s.pub
 
       - name: Import the gpg keys
-        run: echo $GPG_PRIVATE_KEY | gpg --import
+        run: |
+          env
+          echo ${GPG_PRIVATE_KEY} | gpg --import
 
       - name: Creates the k8s cluster using eksctl
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
 
       - name: Encrypts the kubeconfig file
-        run: gpg --recipient $RECIPIENT_EMAIL --encrypt $HOME/.kube/config
+        run: gpg --recipient ${RECIPIENT_EMAIL} --encrypt $HOME/.kube/config
 
       - name: Pushes kubeconfig artifact
         uses: actions/upload-artifact@v3.1.2
         with:
           name: kube_config.gpg
-          path: $GITHUB_WORKSPACE/config.gpg
+          path: ${GITHUB_WORKSPACE}/config.gpg
