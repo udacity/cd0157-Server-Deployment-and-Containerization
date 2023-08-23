@@ -100,4 +100,4 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           name: kube_config.enc
-          path: ${GITHUB_WORKSPACE}/kube_config.enc
+          path: kube_config.enc
