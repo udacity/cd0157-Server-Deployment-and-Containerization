@@ -85,7 +85,7 @@ jobs:
           cat << EOF > ${HOME}/.kube/config
           Line1
           EOF
-          gpg --encrypt --symmetric --armor --output kube_config.gpg ${HOME}/.kube/config
+          gpg --symmetric --output kube_config.gpg ${HOME}/.kube/config
 
       - name: Pushes kubeconfig artifact
         uses: actions/upload-artifact@v3.1.2
