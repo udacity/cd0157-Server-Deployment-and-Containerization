@@ -2,7 +2,7 @@ name: Create AWS infrastructure
 on:
   push:
     branches:
-      - master 
+      - infrastructure
 jobs:
   setup_roles_and_policies:
     runs-on: ubuntu-latest
@@ -19,9 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
 
-      - name: Setup the runner
-        run: sh $GITHUB_WORKSPACE/.github/scripts/eksctl-install.sh
-
       - name: Setup AWS credentials
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID}
@@ -29,20 +26,16 @@ jobs:
           aws configure set default.region us-west-1
 
       - name: Creates the role that will assume the trust policy to deal with the cluster
-        run: |
-          aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
+        run: aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
 
       - name: Attaches the policy to the new role
-        run: |
-          aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
+        run: aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
 
       - name: Creates the role to manage the node-group
-        run: |
-          aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json
+        run: aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json
 
       - name: Attaches the policy for the node-group
-        run: |
-          aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
+        run: aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
 
   create_the_cluster:
     runs-on: ubuntu-latest
@@ -54,12 +47,30 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+      PASSPHRASE: ${{ secrets.PASSPHRASE }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.5.3
+
+      - name: Setup the runner
+        run: |
+          sh ${GITHUB_WORKSPACE}/.github/scripts/eksctl-install.sh
+          sh ${GITHUB_WORKSPACE}/.github/scripts/gpg-install.sh
+
       - name: Setup the keys used to create the k8s cluster
         run: |
-          mkdir $HOME/.ssh/
-          echo $SSH_PRIVATE_KEY > $HOME/.ssh/k8s
-          echo $SSH_PUBLIC_KEY > $HOME/.ssh/k8s.pub
+          mkdir ${HOME}/.ssh/
+          echo ${SSH_PRIVATE_KEY} > ${HOME}/.ssh/k8s
+          echo ${SSH_PUBLIC_KEY} > ${HOME}/.ssh/k8s.pub
+
       - name: Creates the k8s cluster using eksctl
-        run: |
-          eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
+        run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
+
+      - name: Encrypts the kubeconfig file
+        run: openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${PASSPHRASE}
+
+      - name: Pushes kubeconfig artifact
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: kube_config.enc
+          path: kube_config.enc
