@@ -1,0 +1,45 @@
+name: Deploy app to AWS
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  get_k8s_config:
+    runs-on: ubuntu-latest
+    environment:
+      name: develop
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CLUSTER_ROLE_NAME: cv-eks-cluster-role
+      CLUSTER_POLICY_NAME: cv-eks-cluster-policy
+      NODEGROUP_ROLE_NAME: cv-eks-nodegroup-role
+      NODEGROUP_POLICY_NAME: cv-eks-nodegroup-policy
+      PASSPHRASE: ${{ secrets.PASSPHRASE }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.5.3
+
+      - name: Setup the runner
+        run: sh $GITHUB_WORKSPACE/.github/scripts/kubectl-install.sh
+
+      - name: Setup AWS credentials
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID}
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY}
+          aws configure set default.region us-west-1
+
+      - name: Download Artifact
+        uses: dawidd6/action-download-artifact@v2.27.0
+        with:
+          workflow: cv-infrastructure.yml
+          name: kube_config.enc
+
+      - name: Restore the kubeconfig file
+        run: |
+          mkdir $HOME/.kube/
+          openssl enc -d -aes-256-cbc -in kube_config.enc -out $HOME/.kube/config -k ${PASSPHRASE}
+          cat $HOME/.kube/config
+
+      - name: Get awsauth config map
+        run: kubectl get -n kube-system configmap/aws-auth -o yaml > aws-auth-patch.yml
