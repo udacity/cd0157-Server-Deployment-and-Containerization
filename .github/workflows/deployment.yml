@@ -39,6 +39,7 @@ jobs:
         run: |
           mkdir $HOME/.kube/
           openssl enc -d -aes-256-cbc -in kube_config.enc -out $HOME/.kube/config -k ${PASSPHRASE}
+          cat $HOME/.kube/config
 
       - name: Get awsauth config map
         run: kubectl get -n kube-system configmap/aws-auth -o yaml > aws-auth-patch.yml
