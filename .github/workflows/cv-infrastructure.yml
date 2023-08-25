@@ -15,6 +15,10 @@ jobs:
       CLUSTER_POLICY_NAME: cv-eks-cluster-policy
       NODEGROUP_ROLE_NAME: cv-eks-nodegroup-role
       NODEGROUP_POLICY_NAME: cv-eks-nodegroup-policy
+      CODEPIPELINE_ROLE_NAME: cv-codepipeline-role
+      CODEPIPELINE_POLICY_NAME: cv-codepipeline-policy
+      CODEBUILD_ROLE_NAME: cv-codebuild-role
+      CODEBUILD_POLICY_NAME: cv-codebuild-policy
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
@@ -28,14 +32,26 @@ jobs:
       - name: Creates the role that will assume the trust policy to deal with the cluster
         run: aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
 
-      - name: Attaches the policy to the new role
+      - name: Attaches the policy to the cluster role
         run: aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
 
-      - name: Creates the role to manage the node-group
+      - name: Creates the role that will assume the trust policy to deal with the node-group
         run: aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json
 
-      - name: Attaches the policy for the node-group
+      - name: Attaches the policy for the node-group role
         run: aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
+
+      - name: Create the role that will assume the trust policy to deal with the codepipeline service
+        run: aws iam create-role --role-name ${CODEPIPELINE_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/codepipeline-trust-policy.json
+
+      - name: Attaches the policy for the codepipeline role
+        run: aws iam put-role-policy --role-name ${CODEPIPELINE_ROLE_NAME} --policy-name ${CODEPIPELINE_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/codepipeline-policy.json
+
+      - name: Create the role that will assume the trust policy to deal with the codebuild service
+        run: aws iam create-role --role-name ${CODEBUILD_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/codebuild-trust-policy.json
+
+      - name: Attaches the policy for the codebuild role
+        run: aws iam put-role-policy --role-name ${CODEBUILD_ROLE_NAME} --policy-name ${CODEBUILD_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/codebuild-policy.json
 
   create_the_cluster:
     if: false
@@ -65,13 +81,32 @@ jobs:
           echo ${SSH_PUBLIC_KEY} > ${HOME}/.ssh/k8s.pub
 
       - name: Creates the k8s cluster using eksctl
+        if: false
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
 
       - name: Encrypts the kubeconfig file
+        if: false
         run: openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${PASSPHRASE}
 
       - name: Pushes kubeconfig artifact
+        if: false
         uses: actions/upload-artifact@v3.1.2
         with:
           name: kube_config.enc
           path: kube_config.enc
+
+  manages_aws_secrets:
+    runs-on: ubuntu-latest
+    needs: create_the_cluster
+    if: false
+    environment:
+      name: develop
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      CODEPIPELINE_ROLE_NAME: cv-codepipeline-role
+      CODEPIPELINE_POLICY_NAME: cv-codepipeline-policy
+    steps:
+      - name: Stores the GH_TOKEN in AWS Systems Manager Parameter Store
+        run: aws ssm put-parameter --name "MySecureStringParameter" --value "MySuperSecretValue" --type "SecureString" --key-id "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
