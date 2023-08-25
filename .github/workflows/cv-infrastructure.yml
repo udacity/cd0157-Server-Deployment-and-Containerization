@@ -42,13 +42,13 @@ jobs:
         run: aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
 
       - name: Create the role that will assume the trust policy to deal with the codepipeline service
-        run: aws iam create-role --role-name ${CODEPIPELINE_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/code-pipeline-trust-policy.json
+        run: aws iam create-role --role-name ${CODEPIPELINE_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/codepipeline-trust-policy.json
 
       - name: Attaches the policy for the codepipeline role
         run: aws iam put-role-policy --role-name ${CODEPIPELINE_ROLE_NAME} --policy-name ${CODEPIPELINE_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/codepipeline-policy.json
 
       - name: Create the role that will assume the trust policy to deal with the codebuild service
-        run: aws iam create-role --role-name ${CODEBUILD_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/code-build-trust-policy.json
+        run: aws iam create-role --role-name ${CODEBUILD_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/codebuild-trust-policy.json
 
       - name: Attaches the policy for the codebuild role
         run: aws iam put-role-policy --role-name ${CODEBUILD_ROLE_NAME} --policy-name ${CODEBUILD_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/codebuild-policy.json
