@@ -92,17 +92,9 @@ jobs:
       - name: Import the gpg components
         run: |
           echo ${GPG_TRUST_OWNERS} | base64 --decode > trust-file
-          cat trust-file
           gpg --import-ownertrust < trust-file
           echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
           echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import --batch
-
-      - name: Encrypts the kubeconfig file
-        run: |
-          mkdir ${HOME}/.kube/
-          cat << EOF > ${HOME}/.kube/config
-          Line1
-          EOF
 
       - name: Encrypts the kubeconfig file
         run: gpg --encrypt -r runner@mygithub.com --output kube_config.gpg ${HOME}/.kube/config
