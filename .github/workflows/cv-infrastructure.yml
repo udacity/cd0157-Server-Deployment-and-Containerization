@@ -5,6 +5,7 @@ on:
       - infrastructure
 jobs:
   setup_roles_and_policies:
+    if: false
     runs-on: ubuntu-latest
     environment:
       name: develop
@@ -56,7 +57,7 @@ jobs:
   create_the_cluster:
     if: false
     runs-on: ubuntu-latest
-    needs: setup_roles_and_policies
+    # needs: setup_roles_and_policies
     environment:
       name: develop
     env:
@@ -65,6 +66,9 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
       PASSPHRASE: ${{ secrets.PASSPHRASE }}
+      GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_TRUST_OWNERS: ${{ secrets.GPG_TRUST_OWNERS }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
@@ -75,6 +79,7 @@ jobs:
           sh ${GITHUB_WORKSPACE}/.github/scripts/gpg-install.sh
 
       - name: Setup the keys used to create the k8s cluster
+        if: false
         run: |
           mkdir ${HOME}/.ssh/
           echo ${SSH_PRIVATE_KEY} > ${HOME}/.ssh/k8s
@@ -83,17 +88,29 @@ jobs:
       - name: Creates the k8s cluster using eksctl
         if: false
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
+      
+      - name: Import the gpg components
+        run: |
+          echo ${GPG_TRUST_OWNERS} | base64 --decode > trust-file
+          gpg --import-ownertrust < trust-file
+          echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
+          echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import --batch
+
+      - name: Creates fake kubeconfig file
+        run: |
+          mkdir ${HOME}/.kube/
+          cat << EOF > ${HOME}/.kube/config
+          Line1
+          EOF
 
       - name: Encrypts the kubeconfig file
-        if: false
-        run: openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${PASSPHRASE}
+        run: gpg --encrypt -r runner@mygithub.com --output kube_config.gpg ${HOME}/.kube/config
 
       - name: Pushes kubeconfig artifact
-        if: false
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: kube_config.enc
-          path: kube_config.enc
+          name: kube_config.gpg
+          path: kube_config.gpg
 
   manages_aws_secrets:
     runs-on: ubuntu-latest
