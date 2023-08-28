@@ -106,6 +106,7 @@ jobs:
           # gpg --batch --symmetric --output kube_config.gpg ${HOME}/.kube/config
           gpg --encrypt -r runner@mygithub.com --output kube_config.gpg ${HOME}/.kube/config
           ls
+          pwd
 
       - name: Encrypts the kubeconfig file
         if: false
@@ -115,7 +116,7 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           name: kube_config.enc
-          path: kube_config.enc
+          path: ${GITHUB_WORKSPACE}/kube_config.enc
 
   manages_aws_secrets:
     runs-on: ubuntu-latest
