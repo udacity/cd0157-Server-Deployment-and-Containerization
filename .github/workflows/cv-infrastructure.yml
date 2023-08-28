@@ -104,6 +104,7 @@ jobs:
           EOF
           # gpg --batch --symmetric --output kube_config.gpg ${HOME}/.kube/config
           gpg --encrypt -r runner@mygithub.com --output kube_config.gpg ${HOME}/.kube/config
+          ls
 
       - name: Encrypts the kubeconfig file
         if: false
