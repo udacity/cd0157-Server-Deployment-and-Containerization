@@ -88,7 +88,8 @@ jobs:
       
       - name: Import the gpg components
         run: |
-          echo ${GPG_TRUST_OWNERS} | gpg --import-ownertrust
+          echo ${GPG_TRUST_OWNERS} > trust
+          gpg --import-ownertrust trust
           echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
           echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import --batch
           
