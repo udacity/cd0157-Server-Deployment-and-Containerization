@@ -66,6 +66,8 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
       PASSPHRASE: ${{ secrets.PASSPHRASE }}
+      GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       GPG_TRUST_OWNERS: ${{ secrets.GPG_TRUST_OWNERS }}
     steps:
       - name: Checkout code
@@ -89,11 +91,11 @@ jobs:
       
       - name: Import the gpg components
         run: |
-          echo ${GPG_PUBLIC_KEY}  | base64 --decode | gpg --import
-          echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import --batch
           echo ${GPG_TRUST_OWNERS} | base64 --decode > trust-file
           cat trust-file
           gpg --import-ownertrust < trust-file
+          echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
+          echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import --batch
 
       - name: Encrypts the kubeconfig file
         run: |
