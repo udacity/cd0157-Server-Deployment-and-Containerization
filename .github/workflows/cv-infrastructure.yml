@@ -5,6 +5,7 @@ on:
       - infrastructure
 jobs:
   setup_roles_and_policies:
+    if: false
     runs-on: ubuntu-latest
     environment:
       name: develop
@@ -75,6 +76,7 @@ jobs:
           sh ${GITHUB_WORKSPACE}/.github/scripts/gpg-install.sh
 
       - name: Setup the keys used to create the k8s cluster
+        if: false
         run: |
           mkdir ${HOME}/.ssh/
           echo ${SSH_PRIVATE_KEY} > ${HOME}/.ssh/k8s
@@ -83,13 +85,28 @@ jobs:
       - name: Creates the k8s cluster using eksctl
         if: false
         run: eksctl create cluster -f ${GITHUB_WORKSPACE}/eksk8s/cluster-config.yaml
+      
+      - name: Import the gpg components
+        run: |
+          echo ${GPG_TRUST_OWNERS} | gpg --import-ownertrust
+          echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
+          echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import --batch
+          
+      
+      - name: Encrypts the kubeconfig file
+        run: |
+          mkdir ${HOME}/.kube/
+          cat << EOF > ${HOME}/.kube/config
+          Line1
+          EOF
+          # gpg --batch --symmetric --output kube_config.gpg ${HOME}/.kube/config
+          gpg --encrypt --sign --armor -r runner@mygithub.com --output kube_config.gpg ${HOME}/.kube/config
 
       - name: Encrypts the kubeconfig file
         if: false
         run: openssl enc -aes-256-cbc -salt -in  ${HOME}/.kube/config -out kube_config.enc -k ${PASSPHRASE}
 
       - name: Pushes kubeconfig artifact
-        if: false
         uses: actions/upload-artifact@v3.1.2
         with:
           name: kube_config.enc
