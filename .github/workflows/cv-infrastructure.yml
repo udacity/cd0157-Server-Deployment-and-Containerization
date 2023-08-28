@@ -109,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           name: kube_config.gpg
-          path: kube_config.gpg
+          path: ${{ github.workspace }}
 
   manages_aws_secrets:
     runs-on: ubuntu-latest
