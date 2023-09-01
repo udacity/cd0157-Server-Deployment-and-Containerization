@@ -27,3 +27,12 @@ The command `eksctl create cluster -f <file_name>` creates the file `$HOME/.kube
 
 #### Note:
 For reference on how to deal with base64 and gpg keys use this link: https://dev.to/epam_india_python/how-we-set-up-gpg-keys-as-environment-variables-2f26
+
+In order to sort out the problem: `Fixing GPG "Inappropriate ioctl for device" errors`  I run these commands:
+`echo "use-agent" >> ${HOME}/.gnupg/gpg.conf
+ echo "pinentry-mode loopback" >> ${HOME}/.gnupg/gpg.conf
+ touch ${HOME}/.gnupg/gpg-agent.conf
+ echo "allow-loopback-pinentry" >> ${HOME}/.gnupg/gpg-agent.conf`
+
+This command: `echo ${GPG_PASSPHRASE} | gpg --batch --yes --passphrase-fd 0 --output ${HOME}/.kube/config --decrypt ${GITHUB_WORKSPACE}/artifacts/kube_config.gpg` sorts out these errors: `gpg: cannot open '/dev/tty': No such device or address` The command avoids the interaction with the command line. In this scenario, Github Actions does not have an interactive environment.
+
