@@ -17,6 +17,9 @@ jobs:
       CODEPIPELINE_POLICY_NAME: ${{ vars.CODEPIPELINE_POLICY_NAME }}
       CODEBUILD_ROLE_NAME: ${{ vars.CODEBUILD_ROLE_NAME }}
       CODEBUILD_POLICY_NAME: ${{ vars.CODEBUILD_POLICY_NAME }}
+      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      WORKFLOW_NAME: secrets.yml
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
@@ -28,8 +31,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Download the ARN KVM as artifact
+        run: |
+          mkdir ${GITHUB_WORKSPACE}/artifacts
+          RUN_ID=$(gh run list --workflow ${WORKFLOW_NAME} --json databaseId --jq .[0].databaseId)
+          gh run download ${RUN_ID} --dir ${GITHUB_WORKSPACE}/artifacts -n arn.gpg
+
+      - name: Decrypt artifact
+        run: echo ${GPG_PASSPHRASE} | gpg --batch --yes --passphrase-fd 0 --output ${GITHUB_WORKSPACE} --decrypt ${GITHUB_WORKSPACE}/artifacts/arn.gpg
+
       - name: Creates the role that will assume the trust policy to deal with the cluster
-        run: aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json
+        run: |
+          ROLE_ID=$(aws iam create-role --role-name ${CLUSTER_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-trust-policy.json --query KeyMetadata.Arn --output text)
+          export KEY_ID=$(cat ${GITHUB_WORKSPACE}/arn)
+          aws ssm put-parameter --region ${AWS_REGION} --name "CLUSTER_ROLE_NAME" --value ${CLUSTER_ROLE_NAME} --type "SecureString" --key-id "${KEY_ID}" --overwrite
 
       - name: Attaches the policy to the cluster role
         run: aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
