@@ -19,6 +19,7 @@ jobs:
       CODEBUILD_POLICY_NAME: ${{ vars.CODEBUILD_POLICY_NAME }}
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       AWS_REGION: ${{ vars.AWS_REGION }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       WORKFLOW_NAME: secrets.yml
     steps:
       - name: Checkout code
