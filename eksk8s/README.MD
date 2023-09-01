@@ -35,3 +35,4 @@ In order to sort out the problem: `Fixing GPG "Inappropriate ioctl for device" e
  echo "allow-loopback-pinentry" >> ${HOME}/.gnupg/gpg-agent.conf`
 
 This command: `echo ${GPG_PASSPHRASE} | gpg --batch --yes --passphrase-fd 0 --output ${HOME}/.kube/config --decrypt ${GITHUB_WORKSPACE}/artifacts/kube_config.gpg` sorts out these errors: `gpg: cannot open '/dev/tty': No such device or address` The command avoids the interaction with the command line. In this scenario, Github Actions does not have an interactive environment.
+
