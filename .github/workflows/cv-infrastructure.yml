@@ -61,25 +61,40 @@ jobs:
           aws ssm put-parameter --region ${AWS_REGION} --name "CLUSTER_ROLE_NAME" --value ${CLUSTER_ROLE_NAME} --type "SecureString" --key-id "${KEY_ID}" --overwrite
 
       - name: Attaches the policy to the cluster role
-        run: aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json
+        run: |
+          ROLE_ID=$(aws iam put-role-policy --role-name ${CLUSTER_ROLE_NAME} --policy-name ${CLUSTER_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-cluster-policy.json --query KeyMetadata.Arn --output text)
+          export KEY_ID=$(cat ${GITHUB_WORKSPACE}/arn)
+          aws ssm put-parameter --region ${AWS_REGION} --name "CLUSTER_ROLE_NAME" --value ${CLUSTER_ROLE_NAME} --type "SecureString" --key-id "${KEY_ID}" --overwrite
 
       - name: Creates the role that will assume the trust policy to deal with the node-group
-        run: aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json
+        run: |
+          ROLE_ID=$(aws iam create-role --role-name ${NODEGROUP_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-trust-policy.json --query KeyMetadata.Arn --output text)
+          export KEY_ID=$(cat ${GITHUB_WORKSPACE}/arn)
+          aws ssm put-parameter --region ${AWS_REGION} --name "NODEGROUP_ROLE_NAME" --value ${NODEGROUP_ROLE_NAME} --type "SecureString" --key-id "${KEY_ID}" --overwrite
 
       - name: Attaches the policy for the node-group role
-        run: aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json
+        run: |
+          ROLE_ID=$(aws iam put-role-policy --role-name ${NODEGROUP_ROLE_NAME} --policy-name ${NODEGROUP_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/eks-nodegroup-policy.json --query KeyMetadata.Arn --output text)
+          export KEY_ID=$(cat ${GITHUB_WORKSPACE}/arn)
+          aws ssm put-parameter --region ${AWS_REGION} --name "NODEGROUP_ROLE_NAME" --value ${NODEGROUP_ROLE_NAME} --type "SecureString" --key-id "${KEY_ID}" --overwrite
 
       - name: Create the role that will assume the trust policy to deal with the codepipeline service
-        run: aws iam create-role --role-name ${CODEPIPELINE_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/codepipeline-trust-policy.json
+        run: |
+          ROLE_ID=$(aws iam create-role --role-name ${CODEPIPELINE_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/codepipeline-trust-policy.json --query KeyMetadata.Arn --output text)
+          export KEY_ID=$(cat ${GITHUB_WORKSPACE}/arn)
+          aws ssm put-parameter --region ${AWS_REGION} --name "CODEPIPELINE_ROLE_NAME" --value ${CODEPIPELINE_ROLE_NAME} --type "SecureString" --key-id "${KEY_ID}" --overwrite
 
       - name: Attaches the policy for the codepipeline role
         run: aws iam put-role-policy --role-name ${CODEPIPELINE_ROLE_NAME} --policy-name ${CODEPIPELINE_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/codepipeline-policy.json
 
       - name: Create the role that will assume the trust policy to deal with the codebuild service
-        run: aws iam create-role --role-name ${CODEBUILD_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/codebuild-trust-policy.json
+        run: |
+          ROLE_ID=$(aws iam create-role --role-name ${CODEBUILD_ROLE_NAME} --assume-role-policy-document file://${GITHUB_WORKSPACE}/eksk8s/codebuild-trust-policy.json --query KeyMetadata.Arn --output text)
+          export KEY_ID=$(cat ${GITHUB_WORKSPACE}/arn)
+          aws ssm put-parameter --region ${AWS_REGION} --name "CODEPIPELINE_ROLE_NAME" --value ${CODEPIPELINE_ROLE_NAME} --type "SecureString" --key-id "${KEY_ID}" --overwrite
 
       - name: Attaches the policy for the codebuild role
-        run: aws iam put-role-policy --role-name ${CODEBUILD_ROLE_NAME} --policy-name ${CODEBUILD_POLICY_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/codebuild-policy.json
+        run: aws iam put-role-policy --role-name ${CODEBUILD_ROLE_NAME} --policy-name ${CODEBUILD_ROLE_NAME} --policy-document file://${GITHUB_WORKSPACE}/eksk8s/codebuild-policy.json
 
   create_the_cluster:
     runs-on: ubuntu-latest
