@@ -20,6 +20,9 @@ jobs:
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       AWS_REGION: ${{ vars.AWS_REGION }}
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_TRUST_OWNERS: ${{ secrets.GPG_TRUST_OWNERS }}
       WORKFLOW_NAME: secrets.yml
     steps:
       - name: Checkout code
@@ -31,6 +34,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Import the gpg components
+        run: |
+          echo ${GPG_TRUST_OWNERS} | base64 --decode > trust-file
+          gpg --import-ownertrust < trust-file
+          echo ${GPG_PUBLIC_KEY} | base64 --decode | gpg --import
+          echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --import --batch
 
       - name: Download the ARN KVM as artifact
         run: |
