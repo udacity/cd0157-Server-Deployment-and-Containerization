@@ -52,7 +52,7 @@ jobs:
           gh run download ${RUN_ID} --dir ${GITHUB_WORKSPACE}/artifacts -n arn.gpg
 
       - name: Decrypt artifact
-        run: echo ${GPG_PASSPHRASE} | gpg --batch --yes --passphrase-fd 0 --output ${GITHUB_WORKSPACE} --decrypt ${GITHUB_WORKSPACE}/artifacts/arn.gpg
+        run: echo ${GPG_PASSPHRASE} | gpg --batch --yes --passphrase-fd 0 --output ${GITHUB_WORKSPACE}/arn --decrypt ${GITHUB_WORKSPACE}/artifacts/arn.gpg
 
       - name: Creates the role that will assume the trust policy to deal with the cluster
         run: |
