@@ -40,7 +40,7 @@ Parameters:
 
   GitHubUser:
     Type: String
-    Default: SudKul
+    Default: Mujeebla
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
@@ -161,7 +161,7 @@ Resources:
 
       Handler: index.handler
       Role: !GetAtt CustomResourceLambdaExecutionRole.Arn
-      Runtime: python3.7
+      Runtime: python3.8
       Timeout: 300
 
   CustomResourceLambdaExecutionRole:
